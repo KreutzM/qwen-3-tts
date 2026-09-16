@@ -1,0 +1,41 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+build/
+dist/
+
+# Local secrets/config
+.env
+.env.*
+!.env.example
+
+# Models and ML caches
+models/
+.cache/
+.huggingface/
+*.safetensors
+*.gguf
+*.bin
+*.pt
+*.pth
+
+# User/reference audio and local data
+local_data/
+
+# Generated audio and temporary outputs
+outputs/
+*.tmp
+
+# Benchmark raw artifacts; compact result summaries may be committed elsewhere
+experiments/results/raw/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,1 @@
+Am 16. September 2026 wurden 1.024 Messungen ausgewertet. Die Datei heißt sensor_v2.csv. Der Wirkungsgrad η beträgt 93,7 Prozent; die Spannung U_eff liegt bei 230 Volt. Dr. Müller verglich außerdem CPU-, GPU- und KI-basierte Verfahren sowie die Abkürzungen z. B., u. a. und d. h.

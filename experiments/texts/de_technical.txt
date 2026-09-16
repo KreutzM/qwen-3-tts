@@ -1,0 +1,1 @@
+Bei einer Temperatur von 300 Kelvin wurde die elektrische Leistung auf 2,5 Kilowatt erhöht. Der Messwert stieg von 12,4 auf 18,7 Millivolt. Anschließend wurde der Versuch mit einer Abtastrate von 48 Kilohertz wiederholt. Die Unsicherheit beträgt plus oder minus 0,3 Prozent.

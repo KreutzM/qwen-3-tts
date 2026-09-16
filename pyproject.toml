@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=75", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "qwen3-tts-lab"
+version = "0.1.0"
+description = "Local Qwen3-TTS experiments for German TTS and voice cloning"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "qwen-tts",
+  "soundfile",
+  "psutil",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8",
+]
+
+[project.scripts]
+qwen3-clone = "qwen3_tts_lab.clone:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
