@@ -39,6 +39,18 @@ pytest -q
 
 After a local reference voice is placed in `local_data/` (ignored by Git), a voice-clone smoke test can be run with the project CLI described in the setup guide.
 
+## Interactive local UI
+
+After the baseline is installed, start the official Base-model Gradio UI with:
+
+```bash
+./scripts/webui.sh
+```
+
+Open <http://localhost:8000> from Windows. The server binds only to WSL loopback,
+uses the validated CUDA/SDPA path, and does not create a public share link or
+HTTPS endpoint. See the setup guide for reference-audio handling.
+
 ## Upstream
 
 Qwen3-TTS is developed by the Qwen team: <https://github.com/QwenLM/Qwen3-TTS>

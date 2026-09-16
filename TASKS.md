@@ -4,6 +4,22 @@ This file is the execution handoff for Codex CLI. Work phase by phase and record
 
 ## Phase 1 — establish the local baseline
 
+### Completion notes (validated 2026-09-16)
+
+- Completed through model loading with the SDPA baseline; see `docs/ENVIRONMENT.md`.
+- The RTX 3060 was detected through WSL and the 1.7B Base model loaded on GPU
+  without OOM.
+- The reference-audio smoke test was not applicable because no reference WAV and
+  transcript were present under ignored `local_data/`.
+- FlashAttention was not installed or evaluated.
+
+### Phase 1.5 — interactive local UI (validated 2026-09-16)
+
+- `scripts/webui.sh` launches the official 1.7B Base Gradio UI on loopback port
+  8000 after checking the project environment, SoX and CUDA.
+- It uses the established `float16` SDPA baseline and does not enable sharing or
+  HTTPS.
+
 ### 1. Inspect, do not guess
 
 - Read `AGENTS.md`, `README.md`, `docs/SETUP_WSL2.md` and `docs/DECISIONS.md`.

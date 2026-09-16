@@ -35,17 +35,43 @@ pytest -q
 
 The project intentionally starts without FlashAttention. A working standard PyTorch/SDPA path is easier to diagnose and becomes the comparison baseline.
 
-If the `qwen-tts` dependency resolves to a PyTorch build without CUDA support, install a current CUDA-enabled PyTorch build compatible with the actual WSL/NVIDIA driver using official PyTorch instructions, then rerun the verification. Record the exact command in `docs/ENVIRONMENT.md`.
+`bootstrap.sh` uses a system `python3.12` when one is available. On distributions
+such as Ubuntu 22.04 that only ship an older system Python, it installs a pinned,
+project-local CPython runtime under `.python/` using `uv`; both the runtime and
+bootstrap helper are ignored by Git. This avoids changing the WSL system Python
+or requiring an interactive `sudo` password. `ffmpeg` and `git` remain system
+prerequisites.
+
+The validated baseline uses the official PyTorch CUDA 12.1 index:
+
+```bash
+python -m pip install --index-url https://download.pytorch.org/whl/cu121 \
+  'torch==2.5.1+cu121' 'torchaudio==2.5.1+cu121'
+```
+
+The Windows driver reported through WSL must support CUDA 12.1. Do not replace
+the Windows driver with a Linux driver inside WSL. Record the exact command in
+`docs/ENVIRONMENT.md`.
 
 ## 4. Optional local Web UI
 
-After the environment works, upstream provides a local demo server for the Base model:
+Install the optional SoX formats once if they are not already present:
 
 ```bash
-qwen-tts-demo Qwen/Qwen3-TTS-12Hz-1.7B-Base --ip 127.0.0.1 --port 8000
+sudo apt-get update
+sudo apt-get install -y sox libsox-fmt-all
 ```
 
-Open `http://localhost:8000` from Windows. Keeping it bound to `127.0.0.1` avoids exposing the demo to the LAN unnecessarily.
+After the environment works, start the official Base-model Gradio UI through the
+project wrapper:
+
+```bash
+./scripts/webui.sh
+```
+
+Open `http://localhost:8000` from Windows. The wrapper validates the project
+environment and CUDA first, binds to `127.0.0.1`, uses SDPA (`--no-flash-attn`),
+and disables Gradio sharing. HTTPS is not required for this localhost-only UI.
 
 ## 5. Voice-clone smoke test
 
@@ -76,6 +102,9 @@ qwen3-clone \
   --text-file experiments/texts/de_prose.txt \
   --out outputs/de_prose.wav
 ```
+
+Do not add those files to Git. The transcript must match the recording exactly,
+and the recording must be user-owned or used with consent.
 
 The first run may download several GB of model data into the normal model cache. Those files must not be committed.
 
