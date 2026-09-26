@@ -131,5 +131,7 @@ audio blocks cloning and its comparison, not independent implementation work.
 
 Native build/rerun and unconditioned synthesis were verified on 2026-09-26.
 Nine native runs passed structural and termination checks; see
-[docs/LLAMA_CPP_RESULTS.md](docs/LLAMA_CPP_RESULTS.md). #8–#10 remain open for
-listening, consented cloning/comparison and the final adoption review.
+[docs/LLAMA_CPP_RESULTS.md](docs/LLAMA_CPP_RESULTS.md). The user accepted the short smoke and one sample from each German passage by
+listening ("alle ok"). #8–#10 remain open for consented cloning/comparison,
+speaker-similarity listening and the final adoption review. The user confirmed
+that no consented reference recording is available.
