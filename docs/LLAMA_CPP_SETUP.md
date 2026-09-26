@@ -143,5 +143,5 @@ Raw benchmark audio/results stay under ignored `outputs/benchmark/`. Optional
 public export writes a new directory with a whitelist of metrics, excluding raw
 argv, reference paths, private text and raw error messages. Review compact
 exports before committing. The existing Phase 2 benchmark goal in issue #2
-shares this metric/aggregation foundation; its required real cloning evidence
-remains pending. See [measured results and limitations](LLAMA_CPP_RESULTS.md).
+shares this metric/aggregation foundation; the tracker #3 evaluation now
+includes consented cloning and the three-mode comparison. See [measured results and limitations](LLAMA_CPP_RESULTS.md).

@@ -8,13 +8,13 @@ completed before the frame cap, without OOM or process failures. This is runtime
 and timing evidence. On 2026-09-26, the user listened to the short smoke test
 and one sample from each of the three passages and reported "alle ok" (all OK).
 No intelligibility, repetition, sentence-ending or pronunciation issues were
-reported for those four files. The other benchmark repetitions and speaker
-similarity have not been assessed by listening.
+reported for those four files. The other reference-free benchmark repetitions were not reviewed by listening.
+Subsequent consented cloning and speaker-similarity reviews are recorded below.
 
 The initial reference-free evaluation is complete. The user subsequently
 supplied consented reference audio and transcript; a native cloned smoke sample
 was accepted by listening (see the section below). Python conditioning
-comparisons and the final quality/adoption decision are in progress. No synthetic
+comparisons and the final adoption decision are recorded below. No synthetic
 test fixture was used as a real cloning reference.
 
 ## Reproducibility
@@ -112,27 +112,34 @@ float16 and one reusable prompt per conditioning mode across all passages. It
 records model loading and reference-prompt creation separately, marks the first
 synthesis, and samples device memory with the same monitor. PyTorch allocator
 metrics remain separate. This worker has fixture-based logic tests and its exact cached float16/SDPA
-model-load profile was checked on the GPU, and its actual reference-conditioned benchmark is now in progress.
+model-load profile was checked on the GPU, and its actual reference-conditioned benchmark completed all 18 Python runs
+without process/OOM/frame-cap failures.
 
 Sampling parameters and seeds are recorded; code-predictor implementations and
 conditioning differ, so equal seeds do not imply equivalent samples. The native
 CLI exposes talker temperature but does not expose a separate code-predictor
 temperature; Python's subtalker sampling settings are explicitly recorded.
 
-The synthesis listening check covers one sample from each passage and the short
-smoke test. A future cloning listening check should cover: umlauts,
-numbers, abbreviations, terminology, pacing, omissions, repetitions, sentence
-endings and speaker similarity. Record actual observations instead of inferring
-quality from timings or WAV shape.
+The final cloning listening check covers repetition 1 of each passage and mode:
+umlauts, numbers, abbreviations, terminology, pacing, omissions, repetitions,
+sentence endings and speaker similarity. Actual user observations are recorded
+below; quality is not inferred from timings or WAV shape.
 
-## Provisional decision
+## Final adoption decision
 
-Retain the backend as an optional experiment with reproducible setup and a
-bounded runner. Keep Python SDPA as the existing baseline. The observed native
-runs justify continued evaluation; they do not establish an improvement over
-Python or acceptable cloning quality. Final adoption remains pending in tracker
-#3, children #8–#10, until reference-dependent measurements and cloning listening review
-are complete.
+Retain llama.cpp as an optional backend for local German synthesis and cloning
+on this workstation; retain Python SDPA as the established reference/fallback.
+The pinned Q8_0 setup and rerun work, actual cloning succeeds, all 27 matched
+three-mode runs succeed, and the user accepted all nine reviewed passage
+samples. Native synthesis and even fresh-process RTF are lower than Python
+warm generation RTF in this evaluation. This supports offering the optional
+backend; it does not prove general quality equivalence or a universal speedup.
+
+The Python environment and dependency lock are preserved. No new service/UI,
+model-variant tuning, automatic merge or FlashAttention optimization is part of
+this adoption. Changing pins, speakers, texts or hardware requires a new local
+evaluation. All required tracker #3 evidence is recorded; unreviewed seeds and
+objective/blind quality evaluations are explicit limits, not claimed results.
 
 ## User listening evidence
 
@@ -189,9 +196,87 @@ seconds, separate from per-passage synthesis. These are measured results on
 this workstation, not equivalent-conditioning or quality guarantees. GPU runs
 were sequential; device memory includes unrelated Windows/desktop usage, which
 was not terminated. WSL compute-app enumeration returned no attributable
-process rows. Strict background GPU contention isolation is therefore unproven.
+process rows. The user confirmed no other GPU-intensive applications were running during
+the measurements. Experiments are serialized; Windows/desktop allocations
+remain included and WSL cannot establish process-exclusive GPU usage.
 
 Compact measurements: [rows](../experiments/results/llama_cpp/2026-09-26-reference-speaker-only/runs.json)
 and [summary](../experiments/results/llama_cpp/2026-09-26-reference-speaker-only/summary.json).
-Private outputs: `outputs/benchmark/batch-8hox9qj8/`. Longer-passage listening
-and the full three-mode evaluation remain pending.
+Private outputs: `outputs/benchmark/batch-8hox9qj8/`. The subsequent full three-mode evaluation and listening review are recorded
+below.
+
+## Full three-mode comparison: shared 13-second reference
+
+All 27 runs completed successfully: three repetitions per passage for native
+Q8_0 speaker-only, Python float16/SDPA speaker-only, and Python float16/SDPA
+audio-plus-transcript conditioning. The same prepared reference, German texts,
+seeds 42/43/44, 1200-frame bound and 600-second nominal run bound were used.
+The Python process timeout applies to the whole nine-run batch. All outputs
+were readable, non-silent 24 kHz WAVs ending below the nominal duration/frame
+cap. Natural native frame counts were available in the upstream log.
+
+Reproduce with the privately prepared files:
+
+```bash
+./scripts/benchmark_tts.sh --reference local_data/reference-first13s.wav \
+  --transcript local_data/reference-first13s.txt --runs 3 \
+  --export experiments/results/llama_cpp/<new-three-mode-run>
+```
+
+| Mode | Passage | Runs / failures | Median synthesis RTF (range) | Median total native process RTF (range) | Sampled GPU peak range (MiB) |
+| --- | --- | --- | --- | --- | --- |
+| llama.cpp Q8 speaker-only | `de_edge_cases` | 3 / 0 | 0.394 (0.390–0.397) | 0.573 (0.534–0.574) | 8529–8529 |
+| llama.cpp Q8 speaker-only | `de_prose` | 3 / 0 | 0.378 (0.376–0.389) | 0.596 (0.573–0.599) | 8527–8527 |
+| llama.cpp Q8 speaker-only | `de_technical` | 3 / 0 | 0.378 (0.374–0.379) | 0.526 (0.523–0.545) | 8529–8529 |
+| Python SDPA speaker-only | `de_edge_cases` | 3 / 0 | 2.257 (2.244–2.277) | not measured (persistent worker) | 9343–9574 |
+| Python SDPA speaker-only | `de_prose` | 3 / 0 | 2.262 (2.251–2.269) | not measured (persistent worker) | 9560–9792 |
+| Python SDPA speaker-only | `de_technical` | 3 / 0 | 2.298 (2.249–2.338) | not measured (persistent worker) | 10022–11011 |
+| Python SDPA audio + transcript | `de_edge_cases` | 3 / 0 | 2.380 (2.291–2.410) | not measured (persistent worker) | 9684–11053 |
+| Python SDPA audio + transcript | `de_prose` | 3 / 0 | 2.265 (2.255–2.266) | not measured (persistent worker) | 9682–9689 |
+| Python SDPA audio + transcript | `de_technical` | 3 / 0 | 2.209 (2.206–2.256) | not measured (persistent worker) | 9616–9837 |
+
+Python load and prompt creation are separate from generation:
+
+| Conditioning | Model load | Prompt creation |
+| --- | --- | --- |
+| `speaker_only` | 4.661 s | 0.840 s |
+| `audio_and_transcript` | 3.031 s | 0.897 s |
+
+The first synthesis is labelled per Python mode. The table reports all three
+runs, including that first call; subsequent warm calls remain individually
+identifiable in the exported rows. Native timing is fresh-process; its rounded
+upstream component total differs in scope/precision from Python timed API
+generation. Even native total-process RTF is lower in these samples than Python
+generation RTF, but this is a workstation result, not a general backend ratio.
+Generated durations and exact samples differ despite equal seeds.
+
+GPU experiments were serialized. The user confirmed no other GPU-intensive
+applications were running; Windows/desktop allocations were retained. Identical
+0.5-second device-level sampling covers both backends. Peak host process-tree
+RSS and separate PyTorch allocated/reserved CUDA counters are in the exports;
+sampled device peaks include background memory and may miss transients.
+Native logs show 29/29 talker layers, audio encoder and audio generation contexts
+on CUDA0, with small CPU compute buffers and CPU-mapped data remaining. Python
+loads the model explicitly on cuda:0 with SDPA; file/audio preprocessing remains
+on CPU. No all-GPU execution or model-exclusive memory claim is made.
+
+Compact [JSON rows](../experiments/results/llama_cpp/2026-09-26-reference-three-modes/runs.json),
+[CSV rows](../experiments/results/llama_cpp/2026-09-26-reference-three-modes/runs.csv),
+and [summary](../experiments/results/llama_cpp/2026-09-26-reference-three-modes/summary.json)
+exclude private voice/transcript/path data. Raw results/audio/logs stay in
+`outputs/benchmark/batch-tm4jaw2f/`. Generation-time listening fields remain
+`pending`; later user listening evidence is recorded separately below.
+
+### Listening scope
+
+The user accepted repetition 1 of all three native passages ("sie sind ok")
+and reported hearing no difference between Python and llama.cpp. The user also
+explicitly accepted repetition 1 of the three Python speaker-only passages
+("sind ok"). Questions covered intelligibility, completeness, repetition,
+speaker similarity and pronunciation of numbers, umlauts and abbreviations.
+No problems were reported. The user subsequently accepted repetition 1 of all three Python
+transcript-conditioned passages ("sind ok") in response to the same quality
+and similarity questions. No additional differences or defects were reported.
+This is an unblinded subjective review of nine samples, not proof that all
+seeds or speakers have equal quality. Repetitions 2 and 3 remain unreviewed
+by listening; their runtime and structural checks passed.

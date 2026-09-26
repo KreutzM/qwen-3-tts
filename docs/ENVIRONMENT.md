@@ -170,5 +170,22 @@ confirmed timestamp alignment. A private 15-second mono 24 kHz reference
 produced a native clone of 5.12 seconds / 64 frames without OOM or cap failure.
 The user accepted speaker similarity and sentence quality by listening
 ("ja, alles ok"). Detailed measurements and preparation scope are recorded
-in [LLAMA_CPP_RESULTS.md](LLAMA_CPP_RESULTS.md). Longer conditioned backend
-comparison and its quality review remain in progress.
+in [LLAMA_CPP_RESULTS.md](LLAMA_CPP_RESULTS.md). The subsequent full conditioned comparison and user review completed; see
+the final evaluation below.
+
+### Final matched backend evaluation (2026-09-26)
+
+- Shared 13-second mono 24 kHz consented reference, exact timestamp-selected
+  transcript, same three passages, three seeds/runs per mode: 27/27 successful.
+- Modes: native Q8_0 speaker-only, Python float16/SDPA speaker-only and Python
+  float16/SDPA audio-plus-transcript. No package/lock changes.
+- User accepted repetition 1 of every passage/mode (nine samples), including
+  speaker similarity and sentence quality; no audible native/Python difference
+  was reported. Other repetitions have runtime/structural evidence only.
+- Median native synthesis RTF 0.378–0.394, fresh-process RTF 0.526–0.596;
+  Python generation RTF 2.209–2.380. Load/prompt times are separately recorded.
+- GPU experiments were serialized; user confirmed no other intensive GPU apps.
+  Device-wide memory still includes Windows/desktop, with limited WSL attribution.
+- Final decision: retain optional llama.cpp backend; preserve Python reference
+  and fallback. Detailed pins, memory/RSS, measurements and limitations:
+  [LLAMA_CPP_RESULTS.md](LLAMA_CPP_RESULTS.md).

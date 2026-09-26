@@ -48,9 +48,17 @@ recording and German test texts. A separate repository would duplicate the
 benchmark and reproducibility records. Upstream provides native `llama-tts`
 support, so a community fork is unnecessary for the initial experiment.
 
-**Status:** Build/rerun, artifact integrity, GPU synthesis and nine native
-benchmark runs are measured. Retain the backend provisionally as an optional
-experiment. Final adoption, cloning quality and comparison with Python remain
-pending until consented reference input and cloning listening assessment are
-available. The user accepted the four synthesis listening samples.
-See `docs/LLAMA_CPP_RESULTS.md`; no measured Python speedup is claimed.
+**Status:** Evaluation complete on 2026-09-26. Retain llama.cpp as an optional
+local backend, with Python SDPA as the established reference and fallback.
+Pinned build/rerun, artifact integrity and actual consented cloning are verified.
+The matched three-mode comparison completed all 27 runs without failures. The
+user accepted one sample per passage and mode and reported no audible difference
+between Python and llama.cpp. Native reported synthesis RTF is 0.378–0.394;
+native fresh-process RTF is 0.526–0.596; Python generation RTF is 2.209–2.380
+(medians by passage/mode). This supports the optional backend on this machine.
+
+Timing scopes, Q8/float16 differences, device-wide memory, subjective unblinded
+listening and unreviewed repetitions limit generalization. No general quality
+equivalence or universal speedup is claimed. Python dependencies and lock remain
+unchanged. See [LLAMA_CPP_RESULTS.md](LLAMA_CPP_RESULTS.md) for commands, exact
+pins, complete metrics, listening scope and the final adoption decision.

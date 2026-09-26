@@ -1,0 +1,39 @@
+{
+  "date": "2026-09-26",
+  "reviewer": "user",
+  "method": "unblinded listening; one sample per passage/mode",
+  "reviewed_run": 1,
+  "passages": [
+    "de_edge_cases",
+    "de_prose",
+    "de_technical"
+  ],
+  "modes": [
+    {
+      "backend": "llama.cpp",
+      "conditioning": "speaker_only",
+      "feedback": "sie sind ok; no audible difference from Python reported"
+    },
+    {
+      "backend": "python",
+      "conditioning": "speaker_only",
+      "feedback": "sind ok"
+    },
+    {
+      "backend": "python",
+      "conditioning": "audio_and_transcript",
+      "feedback": "sind ok"
+    }
+  ],
+  "questions_covered": [
+    "intelligibility",
+    "completeness",
+    "repetition",
+    "speaker similarity",
+    "numbers",
+    "umlauts",
+    "abbreviations",
+    "quality differences"
+  ],
+  "limitations": "Repetitions 2 and 3 not reviewed by listening; no objective/blind quality equivalence claim."
+}

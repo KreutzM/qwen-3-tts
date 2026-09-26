@@ -64,3 +64,9 @@ The additional backend is developed in this repository on
 See [the setup guide](docs/LLAMA_CPP_SETUP.md) for pinned local CUDA build tools,
 GGUF artifact retrieval, the bounded German runner and verification status.
 The official Python SDPA environment remains the comparison baseline.
+
+The target workstation evaluation completed native cloning and a matched
+27-run comparison across native Q8_0 and both Python conditioning modes. The
+user accepted one sample per passage/mode by listening. Retain llama.cpp as an
+optional backend, with Python SDPA as reference/fallback; see
+[measured results and limitations](docs/LLAMA_CPP_RESULTS.md).
