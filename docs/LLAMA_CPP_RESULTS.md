@@ -5,8 +5,11 @@
 The optional backend builds and produces structurally valid, non-silent German
 WAV files from German input on the target RTX 3060 under WSL2. All nine synthesis benchmark runs
 completed before the frame cap, without OOM or process failures. This is runtime
-and timing evidence; pronunciation, sentence completeness and speaker similarity
-have not been assessed by listening.
+and timing evidence. On 2026-09-26, the user listened to the short smoke test
+and one sample from each of the three passages and reported "alle ok" (all OK).
+No intelligibility, repetition, sentence-ending or pronunciation issues were
+reported for those four files. The other benchmark repetitions and speaker
+similarity have not been assessed by listening.
 
 There is no consented reference WAV/transcript pair in `local_data/`. Python
 speaker-only and transcript-conditioned comparisons, llama.cpp voice cloning,
@@ -74,7 +77,7 @@ historical PyTorch allocated/reserved counters.
 The final-config short smoke test produced 51 frames / 4.08 seconds of 24000 Hz
 PCM WAV audio. Its process time was 5.279 seconds, upstream synthesis time
 1.91 seconds, and sampled device-wide peak 8322 MiB. It ended below the 300-frame
-limit and had nonzero RMS. Listening acceptance remains pending.
+limit and had nonzero RMS. The user accepted this sample by listening.
 
 Trace-level placement logs show 29/29 talker layers offloaded to CUDA0, talker
 Flash Attention disabled, a 448 MiB CUDA KV buffer, and both audio-generation
@@ -115,7 +118,8 @@ conditioning differ, so equal seeds do not imply equivalent samples. The native
 CLI exposes talker temperature but does not expose a separate code-predictor
 temperature; Python's subtalker sampling settings are explicitly recorded.
 
-Listening should cover all three passages and a short cloned sample: umlauts,
+The synthesis listening check covers one sample from each passage and the short
+smoke test. A future cloning listening check should cover: umlauts,
 numbers, abbreviations, terminology, pacing, omissions, repetitions, sentence
 endings and speaker similarity. Record actual observations instead of inferring
 quality from timings or WAV shape.
@@ -126,5 +130,18 @@ Retain the backend as an optional experiment with reproducible setup and a
 bounded runner. Keep Python SDPA as the existing baseline. The observed native
 runs justify continued evaluation; they do not establish an improvement over
 Python or acceptable cloning quality. Final adoption remains pending in tracker
-#3, children #8–#10, until reference-dependent measurements and listening review
+#3, children #8–#10, until reference-dependent measurements and cloning listening review
 are complete.
+
+## User listening evidence
+
+The user accepted these four private outputs on 2026-09-26 with "alle ok":
+
+- `outputs/llama-cpp/run-wgztknfh/speech.wav` (short smoke).
+- `outputs/benchmark/batch-jfzv8mec/llama/run-y70a2y2d/speech.wav` (prose).
+- `outputs/benchmark/batch-jfzv8mec/llama/run-b_py9zha/speech.wav` (technical).
+- `outputs/benchmark/batch-jfzv8mec/llama/run-515txob5/speech.wav` (edge cases).
+
+This is user listening feedback, not an automated quality score or a speaker
+similarity assessment. The user also confirmed that no consented reference
+recording is available. Cloning and the conditioned Python comparison remain open.

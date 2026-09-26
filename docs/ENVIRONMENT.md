@@ -134,8 +134,10 @@ Compiled objects are reused; no upstream source or dependency version is changed
   without OOM, crashes, silent output or frame-cap termination. Median total
   process RTF 0.472–0.527, synthesis RTF 0.362–0.372. GPU memory figures are
   sampled device-wide usage, including other workloads, not exclusive model use.
-- Consent-dependent cloning, Python comparison and actual listening assessment
-  remain pending. Unit fixtures are not real GPU cloning evidence.
+- The user accepted the short smoke and one sample per German benchmark passage
+  by listening on 2026-09-26 ("alle ok"). Consent-dependent cloning and Python
+  comparison remain pending; the user confirmed no reference recording exists.
+  Unit fixtures are not real GPU cloning evidence.
 
 See [LLAMA_CPP_RESULTS.md](LLAMA_CPP_RESULTS.md) and its sanitized result links.
 `requirements.lock.txt` retained SHA-256
