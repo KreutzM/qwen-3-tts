@@ -83,7 +83,7 @@ buffers still exist. The reference speaker-encoder path was not exercised.
 Token/control and experimental-audio warnings remain in the upstream logs;
 structurally valid output does not establish their irrelevance to quality.
 
-All 30 project unit tests pass without model downloads or GPU inference. The
+All 32 project unit tests pass without model downloads or GPU inference. The
 existing Python SDPA helper also reloaded the cached Base snapshot on the GPU
 with unchanged bfloat16 preference and historical allocated/reserved peaks.
 This is a fallback load check, separate from the planned float16 benchmark.

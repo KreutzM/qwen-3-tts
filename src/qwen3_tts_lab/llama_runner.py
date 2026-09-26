@@ -108,8 +108,33 @@ def parse_timings(log: str) -> dict:
     return result
 
 
+def provenance(config: RunConfig) -> dict:
+    """Report pins only for managed artifacts; custom paths have unknown provenance."""
+    result = {"code_revision": None, "model_revision": None, "model_id": None, "quantization": "custom"}
+    pin = ROOT / "config/llama_cpp_revision.txt"
+    if config.executable.resolve() == (ROOT / ".tools/llama.cpp/build/bin/llama-tts").resolve():
+        if not pin.is_file():
+            raise ValueError("Missing code revision pin; restore config/llama_cpp_revision.txt.")
+        expected = pin.read_text().strip()
+        try:
+            git = subprocess.run(["git", "-C", str(ROOT / ".tools/llama.cpp"), "rev-parse", "HEAD"],
+                                 capture_output=True, text=True, timeout=5, check=False)
+        except (OSError, subprocess.SubprocessError) as exc:
+            raise ValueError("Cannot verify llama.cpp checkout; inspect it and rerun bootstrap.") from exc
+        if git.returncode or git.stdout.strip() != expected:
+            raise ValueError("llama.cpp checkout differs from the pin; rerun bootstrap before synthesis.")
+        result["code_revision"] = expected
+    model_dir = ROOT / "models/qwen3-tts-llama"
+    if (config.model.resolve() == (model_dir / "Qwen3-TTS-12Hz-1.7B-Base-Q8_0.gguf").resolve()
+            and config.mmproj.resolve() == (model_dir / "mmproj-Qwen3-TTS-12Hz-1.7B-Base-Q8_0.gguf").resolve()):
+        metadata = json.loads((ROOT / "config/llama_model.json").read_text())
+        result.update(model_revision=metadata["revision"], model_id=metadata["source_model"], quantization="Q8_0")
+    return result
+
+
 def execute(config: RunConfig) -> Path:
     validate(config)
+    identity = provenance(config)
     config.outputs.mkdir(parents=True, exist_ok=True)
     directory = Path(tempfile.mkdtemp(prefix="run-", dir=config.outputs)).resolve()
     output = directory / "speech.wav"
@@ -118,17 +143,7 @@ def execute(config: RunConfig) -> Path:
               "input_characters": len(config.text), "language": config.language,
               "model_id": "Qwen/Qwen3-TTS-12Hz-1.7B-Base", "quantization": "Q8_0" if "Q8_0" in config.model.name else "custom",
               "frame_limit": config.frames, "context": config.context, "talker_attention": config.attention, "sampling": {"seed": config.seed, "temperature": config.temperature, "top_k": config.top_k, "top_p": config.top_p},
-              "command": args, "status": "error", "listening_assessment": "pending"}
-    if (ROOT / "config/llama_cpp_revision.txt").is_file():
-        record["requested_code_revision"] = (ROOT / "config/llama_cpp_revision.txt").read_text().strip()
-        record["code_revision"] = None
-        if config.executable.resolve() == (ROOT / ".tools/llama.cpp/build/bin/llama-tts").resolve():
-            actual = subprocess.run(["git", "-C", str(ROOT / ".tools/llama.cpp"), "rev-parse", "HEAD"],
-                                    capture_output=True, text=True, timeout=5, check=True).stdout.strip()
-            if actual != record["requested_code_revision"]:
-                raise ValueError("llama.cpp checkout differs from the pinned revision; rerun bootstrap.")
-            record["code_revision"] = actual
-        record["model_revision"] = json.loads((ROOT / "config/llama_model.json").read_text())["revision"]
+              "command": args, "status": "error", "listening_assessment": "pending"} | identity
     start = time.monotonic()
     returncode = 1
     error: str | None = None

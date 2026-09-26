@@ -302,3 +302,22 @@ def test_python_benchmark_reuses_one_prompt_for_all_passages(tmp_path, monkeypat
     assert calls == {'load': 1, 'prompt': 1, 'generate': 6}
     assert len(rows) == 6 and all(row['status'] == 'ok' for row in rows)
     assert sum(row['first_synthesis'] for row in rows) == 1
+
+
+def test_custom_runner_does_not_claim_managed_provenance(config):
+    directory = llama_runner.execute(config)
+    record = json.loads((directory/'result.json').read_text())
+    assert record['model_id'] is None and record['model_revision'] is None and record['code_revision'] is None
+
+
+def test_managed_runner_rejects_checkout_mismatch_before_execution(config, monkeypatch):
+    root = config.outputs.parents[1]
+    managed = root/'.tools/llama.cpp/build/bin/llama-tts'
+    managed.parent.mkdir(parents=True)
+    managed.write_bytes(config.executable.read_bytes()); managed.chmod(0o755)
+    (root/'config').mkdir()
+    (root/'config/llama_cpp_revision.txt').write_text('a'*40)
+    monkeypatch.setattr(llama_runner.subprocess, 'run', lambda *a, **kw: subprocess.CompletedProcess(a[0], 0, 'b'*40, ''))
+    with pytest.raises(ValueError, match='checkout differs'):
+        llama_runner.execute(replace(config, executable=managed))
+    assert not config.outputs.exists()
