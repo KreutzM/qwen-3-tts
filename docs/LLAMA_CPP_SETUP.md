@@ -58,9 +58,11 @@ inspection before retrying.
 ```
 
 The wrapper defaults to German (`de`), Q8_0 talker/mmproj, seed 42, temperature
-0.9, top-k 50, top-p 1.0, 99 GPU layers, a 300-frame cap and a 300-second process
+0.9, top-k 50, top-p 1.0, 99 GPU layers, context 4096, talker Flash Attention
+off, a 300-frame cap and a 300-second process
 timeout. Explicit `--model`, `--mmproj`, `--executable`, `--gpu-layers` and sampling
-arguments are available; use `--help`. Offload settings do not prove that all
+arguments, plus `--context` and `--attention`, are available; use `--help`.
+Log verbosity 4 captures actual device placement. Model loading is offline. Offload settings do not prove that all
 components run on the GPU: inspect `process.log` for actual placement/fallbacks.
 
 Each invocation creates a fresh `outputs/llama-cpp/run-*/` directory containing
@@ -115,3 +117,31 @@ Keep `.venv` and `requirements.lock.txt` unchanged while evaluating llama.cpp.
 Record failures and actual versions before considering dependency changes or a
 community implementation. Model variants, a new UI/service and FlashAttention
 optimization are separate later decisions.
+
+## Manual benchmark
+
+```bash
+# Valid without a reference; produces native synthesis measurements only:
+./scripts/benchmark_tts.sh --backends llama --runs 3 \
+  --export experiments/results/llama_cpp/<new-run-name>
+
+# Actual cross-backend clone comparison requires consented input:
+./scripts/benchmark_tts.sh --reference local_data/reference.wav \
+  --transcript local_data/reference.txt --runs 3 \
+  --export experiments/results/llama_cpp/<new-comparison-name>
+```
+
+The default selects llama.cpp, Python SDPA speaker-only, and Python SDPA with
+transcript conditioning. Native calls use fresh processes; each Python mode
+loads one model and reuses one prompt across all passages/runs. Python uses the
+locally cached snapshot pinned in `config/python_model_revision.txt` and performs
+no downloads. Warm timing, first synthesis, model-load time and prompt setup are
+identified separately. A Python worker's overall timeout is the per-run timeout
+multiplied by passage count and repetitions. Partial failures are preserved.
+
+Raw benchmark audio/results stay under ignored `outputs/benchmark/`. Optional
+public export writes a new directory with a whitelist of metrics, excluding raw
+argv, reference paths, private text and raw error messages. Review compact
+exports before committing. The existing Phase 2 benchmark goal in issue #2
+shares this metric/aggregation foundation; its required real cloning evidence
+remains pending. See [measured results and limitations](LLAMA_CPP_RESULTS.md).

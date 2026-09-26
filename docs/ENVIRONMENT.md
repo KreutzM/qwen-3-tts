@@ -116,3 +116,39 @@ shared libraries were omitted from the generated runtime search path
 (`libcudart.so.12` / `libcublas.so.12` not found). Bootstrap now passes
 `CMAKE_BUILD_RPATH=<detected-toolkit>/lib64`, keeping toolkit resolution local.
 Compiled objects are reused; no upstream source or dependency version is changed.
+
+## llama.cpp runtime verification (2026-09-26)
+
+- Bootstrap completed successfully after the documented local library-layout
+  and RPATH fixes. A second successful bootstrap reused the existing build.
+- `llama-tts --version` reports 0.5.0-dev, commit 81bc6b8, GCC 11.4.0.
+- `ldd` resolves libcudart/cuBLAS from the local toolkit and libcuda from WSL.
+- Final smoke: 51 frames, 4.08 s, 24000 Hz, non-silent, regular termination below
+  the 300-frame cap; 5.279 s process wall time / 1.91 s reported synthesis time.
+- Trace logs: 29/29 talker layers offloaded; two audio-generation contexts use
+  CUDA0. Talker Flash Attention explicitly off; context explicitly 4096. Small
+  CPU buffers and CPU-mapped model data remain. Speaker encoding is unverified.
+- Nine native benchmark runs (three per existing German passage) completed
+  without OOM, crashes, silent output or frame-cap termination. Median total
+  process RTF 0.472–0.527, synthesis RTF 0.362–0.372. GPU memory figures are
+  sampled device-wide usage, including other workloads, not exclusive model use.
+- Consent-dependent cloning, Python comparison and actual listening assessment
+  remain pending. Unit fixtures are not real GPU cloning evidence.
+
+See [LLAMA_CPP_RESULTS.md](LLAMA_CPP_RESULTS.md) and its sanitized result links.
+`requirements.lock.txt` retained SHA-256
+`8a6ab989175719fe1a7c008f67607d8871d1c6386234d43cf8b2452e73208e7a`;
+Python qwen-tts/PyTorch versions and the baseline tests remain unchanged.
+
+The existing Python `load_model(..., attention="sdpa")` helper was also re-run
+against the cached pinned local snapshot after the llama.cpp installation. It
+loaded successfully on the GPU with its unchanged preferred bfloat16 dtype:
+4,203,216,384 bytes peak allocated and 4,334,813,184 bytes peak reserved. This
+checks model loading; it is not a clone benchmark. The comparison worker uses
+explicit float16 as documented, rather than silently conflating these profiles.
+
+An initial offline probe using the repository ID failed because the installed
+Transformers tokenizer's `fix_mistral_regex` path queried model metadata despite
+`HF_HUB_OFFLINE=1`. Using the existing cached snapshot's local path avoided that
+lookup and passed. No package versions or original runtime helper were changed.
+The new Python benchmark worker already uses this local-snapshot approach.

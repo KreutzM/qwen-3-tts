@@ -48,6 +48,8 @@ recording and German test texts. A separate repository would duplicate the
 benchmark and reproducibility records. Upstream provides native `llama-tts`
 support, so a community fork is unnecessary for the initial experiment.
 
-**Status:** Preparation and artifact retrieval are measured; GPU synthesis,
-cloning quality and the adoption decision remain pending. A functioning C++
-backend will not be treated as a proven improvement without comparison data.
+**Status:** Build/rerun, artifact integrity, GPU synthesis and nine native
+benchmark runs are measured. Retain the backend provisionally as an optional
+experiment. Final adoption, cloning quality and comparison with Python remain
+pending until consented reference input and listening assessment are available.
+See `docs/LLAMA_CPP_RESULTS.md`; no measured Python speedup is claimed.

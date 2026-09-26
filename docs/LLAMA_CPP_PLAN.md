@@ -147,8 +147,9 @@ mkdir -p "$run_dir"
   --output "$run_dir/speech.wav"
 ```
 
-At 12 frames per second, 300 frames correspond to approximately 25 seconds as
-a nominal upper bound. Check that synthesis ends naturally before the cap;
+Execution note (2026-09-26): the selected codec uses 1920 samples per frame at
+24000 Hz, giving 12.5 frames per second despite the 12Hz model name. A 300-frame
+cap therefore corresponds to approximately 24 seconds. Check that synthesis ends naturally before the cap;
 truncation at the cap is a failure for this short sentence. Add a process timeout
 in the eventual runner. Record exit status and logs, inspect the WAV's duration,
 sample rate and non-silent content, and listen for intelligibility and repetition.

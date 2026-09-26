@@ -110,7 +110,7 @@ def test_runner_arguments_unicode_paths_and_unique_outputs(config):
     assert record['listening_assessment'] == 'pending'
 
 
-@pytest.mark.parametrize('changes', [{'frames': 0}, {'timeout': float('nan')}, {'top_p': 2}, {'temperature': float('inf')}, {'seed': -1}, {'language': 'xx'}])
+@pytest.mark.parametrize('changes', [{'frames': 0}, {'timeout': float('nan')}, {'top_p': 2}, {'temperature': float('inf')}, {'seed': -1}, {'language': 'xx'}, {'context': 128}, {'context': 300}, {'attention': 'invalid'}])
 def test_runner_rejects_invalid_settings(config, changes):
     with pytest.raises(ValueError):
         llama_runner.execute(replace(config, **changes))
@@ -221,3 +221,84 @@ def test_manifest_structure_errors_are_actionable(tmp_path, data):
     path.write_text(json.dumps(data))
     with pytest.raises(ValueError):
         artifacts.read_manifest(path)
+
+
+def test_benchmark_export_excludes_private_fields(tmp_path):
+    from qwen3_tts_lab.benchmark import export_results
+    row = {'backend': 'llama.cpp', 'conditioning': 'none', 'passage': 'de_prose', 'run': 1,
+           'status': 'error', 'command': ['secret transcript'], 'error': '/private/name/token',
+           'reference': '/private/voice.wav', 'resource_samples': [{'pid': 123}], 'input_characters': 32}
+    directory = tmp_path / 'public'
+    export_results([row], directory)
+    exported = ''.join(p.read_text() for p in directory.iterdir())
+    for private in ('secret transcript', '/private', 'resource_samples', '123'):
+        assert private not in exported
+    assert json.loads((directory/'summary.json').read_text())[0]['failures'] == 1
+    with pytest.raises(FileExistsError): export_results([row], directory)
+
+
+def test_benchmark_rejects_missing_reference_before_gpu_work(tmp_path, monkeypatch):
+    import argparse
+    from qwen3_tts_lab import benchmark as module
+    texts = tmp_path / 'texts'
+    texts.mkdir()
+    (texts/'de_prose.txt').write_text('Öffentliche Probe.')
+    monkeypatch.setattr(module, 'ROOT', tmp_path)
+    args = argparse.Namespace(texts=texts, runs=3, timeout=10, frames=300, seed=42,
+                              backends=['python-speaker'], reference=None, transcript=None, export=None)
+    with pytest.raises(ValueError, match='reference.wav'):
+        module.benchmark(args)
+    assert not (tmp_path/'outputs').exists()
+
+
+def test_python_benchmark_reuses_one_prompt_for_all_passages(tmp_path, monkeypatch):
+    import argparse
+    import numpy as np
+    import torch
+    import huggingface_hub
+    import qwen_tts
+    from qwen3_tts_lab import python_benchmark_worker as worker
+    texts = tmp_path/'texts'; texts.mkdir()
+    (texts/'de_a.txt').write_text('Äpfel und Öl.')
+    (texts/'de_b.txt').write_text('Zwei Volt.')
+    destination = tmp_path/'results'; destination.mkdir()
+    codec = tmp_path/'cached-model/speech_tokenizer'
+    codec.mkdir(parents=True)
+    (codec/'config.json').write_text(json.dumps({'decode_upsample_rate': 1920, 'output_sample_rate': 24000}))
+    calls = {'prompt': 0, 'load': 0, 'generate': 0}
+    prompt = object()
+    class Model:
+        def create_voice_clone_prompt(self, **kwargs):
+            calls['prompt'] += 1
+            assert kwargs['x_vector_only_mode'] is True
+            return prompt
+        def generate_voice_clone(self, **kwargs):
+            calls['generate'] += 1
+            assert kwargs['voice_clone_prompt'] is prompt
+            return [np.full(2400, 0.05)], 24000
+    def load(*args, **kwargs):
+        calls['load'] += 1
+        assert kwargs['attn_implementation'] == 'sdpa' and kwargs['dtype'] == torch.float16
+        return Model()
+    monkeypatch.setattr(qwen_tts.Qwen3TTSModel, 'from_pretrained', load)
+    def snapshot(*args, **kwargs):
+        assert kwargs['local_files_only'] is True and kwargs['revision'] == 'pinned'
+        return str(tmp_path/'cached-model')
+    monkeypatch.setattr(huggingface_hub, 'snapshot_download', snapshot)
+    monkeypatch.setattr(torch, 'manual_seed', lambda seed: None)
+    for name in ['synchronize', 'reset_peak_memory_stats']:
+        monkeypatch.setattr(torch.cuda, name, lambda: None)
+    for name in ['max_memory_allocated', 'max_memory_reserved']:
+        monkeypatch.setattr(torch.cuda, name, lambda: 1234)
+    class Monitor:
+        def __init__(self, *args): pass
+        def start(self): pass
+        def finish(self): return {'peak_device_used_mib': 1}
+    monkeypatch.setattr(worker, 'ResourceMonitor', Monitor)
+    args=argparse.Namespace(revision='pinned', mode='speaker', reference=tmp_path/'fake-reference',
+                            transcript=None, texts=texts, runs=3, seed=42, frames=300, destination=destination)
+    worker.run_batch(args)
+    rows=json.loads((destination/'results.json').read_text())
+    assert calls == {'load': 1, 'prompt': 1, 'generate': 6}
+    assert len(rows) == 6 and all(row['status'] == 'ok' for row in rows)
+    assert sum(row['first_synthesis'] for row in rows) == 1

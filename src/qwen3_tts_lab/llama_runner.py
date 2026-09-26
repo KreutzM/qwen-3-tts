@@ -30,6 +30,8 @@ class RunConfig:
     frames: int = 300
     timeout: float = 300
     gpu_layers: int = 99
+    context: int = 4096
+    attention: str = "off"
     seed: int = 42
     temperature: float = 0.9
     top_k: int = 50
@@ -58,6 +60,8 @@ def validate(config: RunConfig) -> None:
         raise ValueError("Keep consented reference recordings inside ignored local_data/.")
     if config.language not in {"de", "en", "zh", "it", "pt", "es", "ja", "ko", "fr", "ru"}:
         raise ValueError("Unsupported language code.")
+    if config.context < 256 or config.frames >= config.context or config.attention not in {"off", "on", "auto"}:
+        raise ValueError("Context must be >=256 and exceed the frame cap; attention must be off/on/auto.")
     if config.frames <= 0 or config.gpu_layers < 0 or config.top_k <= 0 or not 0 <= config.seed <= 0xFFFFFFFF:
         raise ValueError("Frames/top-k must be positive; GPU layers non-negative; seed must fit uint32.")
     if not math.isfinite(config.timeout) or config.timeout <= 0:
@@ -72,7 +76,8 @@ def validate(config: RunConfig) -> None:
 def command(config: RunConfig, output: Path) -> list[str]:
     args = [str(config.executable.resolve()), "-m", str(config.model.resolve()),
             "--mmproj", str(config.mmproj.resolve()), "--tts-lang", config.language,
-            "-ngl", str(config.gpu_layers), "-n", str(config.frames), "--seed", str(config.seed),
+            "-ngl", str(config.gpu_layers), "-c", str(config.context), "--flash-attn", config.attention,
+            "--verbosity", "4", "--offline", "-n", str(config.frames), "--seed", str(config.seed),
             "--temp", str(config.temperature), "--top-k", str(config.top_k), "--top-p", str(config.top_p),
             "-p", config.text, "--output", str(output)]
     if config.reference:
@@ -112,7 +117,7 @@ def execute(config: RunConfig) -> Path:
     record = {"backend": "llama.cpp", "conditioning": "speaker_only" if config.reference else "none",
               "input_characters": len(config.text), "language": config.language,
               "model_id": "Qwen/Qwen3-TTS-12Hz-1.7B-Base", "quantization": "Q8_0" if "Q8_0" in config.model.name else "custom",
-              "frame_limit": config.frames, "sampling": {"seed": config.seed, "temperature": config.temperature, "top_k": config.top_k, "top_p": config.top_p},
+              "frame_limit": config.frames, "context": config.context, "talker_attention": config.attention, "sampling": {"seed": config.seed, "temperature": config.temperature, "top_k": config.top_k, "top_p": config.top_p},
               "command": args, "status": "error", "listening_assessment": "pending"}
     if (ROOT / "config/llama_cpp_revision.txt").is_file():
         record["requested_code_revision"] = (ROOT / "config/llama_cpp_revision.txt").read_text().strip()
@@ -175,9 +180,10 @@ def main() -> None:
     parser.add_argument("--reference", type=Path)
     for name in ("executable", "model", "mmproj", "outputs"):
         parser.add_argument(f"--{name}", type=Path, default=getattr(RunConfig(""), name))
-    for name, kind in (("frames", int), ("timeout", float), ("gpu-layers", int), ("seed", int), ("temperature", float), ("top-k", int), ("top-p", float)):
+    for name, kind in (("frames", int), ("context", int), ("timeout", float), ("gpu-layers", int), ("seed", int), ("temperature", float), ("top-k", int), ("top-p", float)):
         parser.add_argument(f"--{name}", type=kind, default=getattr(RunConfig(""), name.replace("-", "_")))
     parser.add_argument("--language", default="de")
+    parser.add_argument("--attention", choices=("off", "on", "auto"), default="off")
     args = vars(parser.parse_args())
     try:
         file = args.pop("text_file")

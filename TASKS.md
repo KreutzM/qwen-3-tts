@@ -119,12 +119,17 @@ Read [docs/LLAMA_CPP_SETUP.md](docs/LLAMA_CPP_SETUP.md) and
 Follow child dependencies and record only measured progress:
 
 - [x] #4: branch, target-machine inspection, local compiler toolchain and code pin.
-- [ ] #5: successful CUDA TTS build and safe bootstrap rerun.
-- [ ] #6: verified Q8_0 artifacts and runtime compatibility.
-- [ ] #7: bounded German runner, unit tests and documented commands.
+- [x] #5: successful CUDA TTS build and safe bootstrap rerun.
+- [x] #6: verified Q8_0 artifacts and runtime compatibility.
+- [x] #7: bounded German runner, unit tests and documented commands.
 - [ ] #8: actual synthesis, consented cloning and listening acceptance.
 - [ ] #9: comparable backend benchmarks and quality assessment.
 - [ ] #10: final reproducibility record, adoption decision and reviewable PR.
 
 Model downloads and GPU inference stay local/manual. Missing consented reference
 audio blocks cloning and its comparison, not independent implementation work.
+
+Native build/rerun and unconditioned synthesis were verified on 2026-09-26.
+Nine native runs passed structural and termination checks; see
+[docs/LLAMA_CPP_RESULTS.md](docs/LLAMA_CPP_RESULTS.md). #8–#10 remain open for
+listening, consented cloning/comparison and the final adoption review.
