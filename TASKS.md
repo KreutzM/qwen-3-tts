@@ -111,3 +111,20 @@ Only after Phase 1 is stable:
 Investigate paragraph/chapter chunking, deterministic file naming, resume/retry behavior, text normalization for German numbers/units/abbreviations, and later forced alignment for EPUB/DAISY Media Overlays.
 
 Do not implement DAISY packaging until the TTS baseline and long-form segmentation are characterized.
+
+## Optional llama.cpp backend — tracker #3
+
+Read [docs/LLAMA_CPP_SETUP.md](docs/LLAMA_CPP_SETUP.md) and
+[tracking issue #3](https://github.com/KreutzM/qwen-3-tts/issues/3).
+Follow child dependencies and record only measured progress:
+
+- [x] #4: branch, target-machine inspection, local compiler toolchain and code pin.
+- [ ] #5: successful CUDA TTS build and safe bootstrap rerun.
+- [ ] #6: verified Q8_0 artifacts and runtime compatibility.
+- [ ] #7: bounded German runner, unit tests and documented commands.
+- [ ] #8: actual synthesis, consented cloning and listening acceptance.
+- [ ] #9: comparable backend benchmarks and quality assessment.
+- [ ] #10: final reproducibility record, adoption decision and reviewable PR.
+
+Model downloads and GPU inference stay local/manual. Missing consented reference
+audio blocks cloning and its comparison, not independent implementation work.

@@ -81,7 +81,9 @@ print('generated 12 frames, 48044 bytes of WAV audio (24000 Hz)')
 print('timings: prompt eval 0.10s + generation 0.20s + vocoder 0.05s = total 0.35s')
 '''.replace("Path('args.json')", "Path(sys.argv[sys.argv.index('--output')+1]).with_name('args.json')"))
     exe.chmod(0o755)
-    model, companion, reference = [folder / name for name in ('talker.gguf', 'audio.gguf', 'reference.wav')]
+    model, companion = [folder / name for name in ('talker.gguf', 'audio.gguf')]
+    reference = tmp_path / 'local_data/reference voice.wav'
+    reference.parent.mkdir()
     for path in (model, companion, reference):
         path.write_bytes(b'keep')
     class Monitor:
@@ -196,3 +198,18 @@ fi
     git('remote', 'set-url', 'origin', 'https://example.org/other.git')
     failed = run()
     assert failed.returncode == 1 and 'Unexpected llama.cpp remote' in failed.stderr
+
+
+def test_runner_invalid_wav_is_recorded(config):
+    config.executable.write_text(f"#!{sys.executable}\nimport sys\nfrom pathlib import Path\nPath(sys.argv[sys.argv.index('--output')+1]).write_bytes(b'not audio')\n")
+    with pytest.raises(llama_runner.RunError) as exc:
+        llama_runner.execute(config)
+    record = json.loads((exc.value.result_dir / 'result.json').read_text())
+    assert record['status'] == 'error' and record['error']
+
+
+def test_reference_must_remain_local(config):
+    outside = config.model.parent / 'reference.wav'
+    outside.write_bytes(b'private')
+    with pytest.raises(ValueError, match='local_data'):
+        llama_runner.execute(replace(config, reference=outside))

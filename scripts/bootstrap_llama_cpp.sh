@@ -14,7 +14,7 @@ done
 checkout="$project_root/.tools/llama.cpp"
 remote='https://github.com/ggml-org/llama.cpp.git'
 if [[ ! -e "$checkout" ]]; then
-  git clone --no-checkout "$remote" "$checkout"
+  git clone --depth 1 --no-checkout "$remote" "$checkout"
 fi
 [[ -d "$checkout/.git" ]] || { echo 'Unexpected .tools/llama.cpp; expected a Git checkout.' >&2; exit 1; }
 [[ "$(git -C "$checkout" remote get-url origin)" == "$remote" ]] || { echo 'Unexpected llama.cpp remote; inspect checkout before retrying.' >&2; exit 1; }

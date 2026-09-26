@@ -54,6 +54,8 @@ def validate(config: RunConfig) -> None:
         raise ValueError("llama-tts executable is not executable.")
     if config.reference is not None and not config.reference.is_file():
         raise ValueError("Reference audio does not exist; use a consented local file.")
+    if config.reference is not None and not config.reference.resolve().is_relative_to((ROOT / "local_data").resolve()):
+        raise ValueError("Keep consented reference recordings inside ignored local_data/.")
     if config.language not in {"de", "en", "zh", "it", "pt", "es", "ja", "ko", "fr", "ru"}:
         raise ValueError("Unsupported language code.")
     if config.frames <= 0 or config.gpu_layers < 0 or config.top_k <= 0 or not 0 <= config.seed <= 0xFFFFFFFF:
