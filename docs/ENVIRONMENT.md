@@ -110,3 +110,9 @@ The first CMake compiler-identification attempt failed because nvcc expected
 `-lcudart_static` not found). The local setup now creates `lib64 -> lib` when
 absent. This fixes directory layout without changing any dependency version.
 The failed build log is retained locally for comparison.
+
+A second build reached final linking but failed because the non-system CUDA
+shared libraries were omitted from the generated runtime search path
+(`libcudart.so.12` / `libcublas.so.12` not found). Bootstrap now passes
+`CMAKE_BUILD_RPATH=<detected-toolkit>/lib64`, keeping toolkit resolution local.
+Compiled objects are reused; no upstream source or dependency version is changed.

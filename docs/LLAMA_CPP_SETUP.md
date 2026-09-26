@@ -38,7 +38,7 @@ The script is specific to Linux x86_64; re-evaluate pins for other machines.
 
 `config/llama_cpp_revision.txt` pins the official code SHA. Bootstrap refuses
 unrelated/dirty checkouts, targets compute capability 8.6 for the RTX 3060, and
-builds Release with CUDA. Set `LLAMA_BUILD_JOBS=4` for fewer compiler processes
+builds Release with CUDA and an explicit runtime search path to the toolkit libraries. Set `LLAMA_BUILD_JOBS=4` for fewer compiler processes
 (allowed range 1–32). HTTPS support in the binary is disabled; downloads use the
 separate artifact tool and inference uses explicit local paths.
 

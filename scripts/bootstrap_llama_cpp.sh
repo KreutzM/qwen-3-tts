@@ -27,6 +27,7 @@ cuda_root="$(cd "$(dirname "$(command -v nvcc)")/.." && pwd)"
 cmake -S "$checkout" -B "$checkout/build" \
   -DCMAKE_BUILD_TYPE=Release -DGGML_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES=86 \
   -DCUDAToolkit_ROOT="$cuda_root" -DCMAKE_CUDA_COMPILER="$cuda_root/bin/nvcc" \
+  -DCMAKE_BUILD_RPATH="$cuda_root/lib64" \
   -DLLAMA_OPENSSL=OFF -DLLAMA_BUILD_TESTS=OFF
 cmake --build "$checkout/build" --config Release --target llama-tts -j "$jobs"
 "$checkout/build/bin/llama-tts" --help
