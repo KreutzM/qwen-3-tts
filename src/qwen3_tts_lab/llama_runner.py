@@ -113,7 +113,14 @@ def execute(config: RunConfig) -> Path:
               "frame_limit": config.frames, "sampling": {"seed": config.seed, "temperature": config.temperature, "top_k": config.top_k, "top_p": config.top_p},
               "command": args, "status": "error", "listening_assessment": "pending"}
     if (ROOT / "config/llama_cpp_revision.txt").is_file():
-        record["code_revision"] = (ROOT / "config/llama_cpp_revision.txt").read_text().strip()
+        record["requested_code_revision"] = (ROOT / "config/llama_cpp_revision.txt").read_text().strip()
+        record["code_revision"] = None
+        if config.executable.resolve() == (ROOT / ".tools/llama.cpp/build/bin/llama-tts").resolve():
+            actual = subprocess.run(["git", "-C", str(ROOT / ".tools/llama.cpp"), "rev-parse", "HEAD"],
+                                    capture_output=True, text=True, timeout=5, check=True).stdout.strip()
+            if actual != record["requested_code_revision"]:
+                raise ValueError("llama.cpp checkout differs from the pinned revision; rerun bootstrap.")
+            record["code_revision"] = actual
         record["model_revision"] = json.loads((ROOT / "config/llama_model.json").read_text())["revision"]
     start = time.monotonic()
     returncode = 1
@@ -146,7 +153,7 @@ def execute(config: RunConfig) -> Path:
                 record["status"] = "ok"
                 record["process_rtf"] = real_time_factor(record["process_wall_s"], record["audio_duration_s"])
                 record["synthesis_rtf"] = real_time_factor(record["synthesis_s"], record["audio_duration_s"]) if record.get("synthesis_s") else None
-    except (OSError, ValueError) as exc:
+    except (OSError, ValueError, RuntimeError) as exc:
         error = str(exc)
         returncode = 1
     finally:

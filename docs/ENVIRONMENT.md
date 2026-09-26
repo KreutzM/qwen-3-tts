@@ -104,3 +104,9 @@ audio companion. Both downloads completed and passed the pinned size/checksum
 checks. Full checksums and byte sizes are in `config/llama_model.json`; artifact
 files remain under ignored `models/qwen3-tts-llama/`. File size is not VRAM use.
 There is still no local reference WAV/transcript pair.
+
+The first CMake compiler-identification attempt failed because nvcc expected
+`lib64/` while the component archives used `lib/` (`-lcudadevrt` and
+`-lcudart_static` not found). The local setup now creates `lib64 -> lib` when
+absent. This fixes directory layout without changing any dependency version.
+The failed build log is retained locally for comparison.

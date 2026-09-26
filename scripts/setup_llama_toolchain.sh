@@ -37,5 +37,9 @@ else:
     shutil.copyfile(source, staging / 'toolkit/.manifest.json')
     (staging / 'toolkit').rename(destination)
     print('Installed project-local CUDA toolkit; component licenses retained in staging/components.')
+# NVIDIA component archives use lib/, while nvcc's profile expects lib64/.
+link = destination / 'lib64'
+if not link.exists() and not link.is_symlink():
+    link.symlink_to('lib', target_is_directory=True)
 PY
 .tools/cuda-12.8.1/bin/nvcc --version
