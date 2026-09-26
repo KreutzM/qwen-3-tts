@@ -35,3 +35,19 @@
 - Public repository license for this integration code (owner decision; do not assume one).
 - Whether long-form generation should use the Python API directly or a service layer.
 - Forced-alignment stack for future EPUB/DAISY Media Overlays.
+
+## ADR-006 — evaluate llama.cpp as an optional backend in this repository
+
+**Decision:** Develop on `feat/llama-cpp-backend`, consuming the official pinned
+llama.cpp source and ggml-org Q8_0 conversion alongside the existing Python
+SDPA implementation. Use project-local compiler tools where system tools are
+missing. Keep the original Python dependency environment intact.
+
+**Rationale:** Both backends share the target model, machine, consented reference
+recording and German test texts. A separate repository would duplicate the
+benchmark and reproducibility records. Upstream provides native `llama-tts`
+support, so a community fork is unnecessary for the initial experiment.
+
+**Status:** Preparation and artifact retrieval are measured; GPU synthesis,
+cloning quality and the adoption decision remain pending. A functioning C++
+backend will not be treated as a proven improvement without comparison data.
