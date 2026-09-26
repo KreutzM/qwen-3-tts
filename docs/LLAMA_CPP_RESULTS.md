@@ -168,3 +168,30 @@ For a full comparison, a separate first-13-second reference ends at the next
 transcript boundary. Its exact provided transcript comprises the segments
 starting at 0:01 and 0:07; timestamps and the longer document header are removed.
 All configurations in that comparison use the same prepared audio.
+
+## 15-second speaker-only preliminary comparison
+
+The first reference-based batch completed all 18 runs (three per passage and
+backend) without process/OOM/frame-cap failures. Both backends used the same
+15-second mono 24 kHz reference and seeds 42/43/44. Native inference is a fresh
+CLI process; Python loads once and reuses a speaker-only prompt. This batch
+contains no transcript-conditioned configuration and is separate from the
+13-second three-mode comparison.
+
+| Passage | Native median synthesis RTF (range) | Python speaker-only median synthesis RTF (range) |
+| --- | --- | --- |
+| `de_edge_cases` | 0.369 (0.363–0.379) | 2.158 (2.121–2.238) |
+| `de_prose` | 0.380 (0.377–0.390) | 2.154 (2.126–2.218) |
+| `de_technical` | 0.380 (0.372–0.390) | 2.266 (2.243–2.409) |
+
+Python model loading took 4.380 seconds and reference-prompt creation 1.554
+seconds, separate from per-passage synthesis. These are measured results on
+this workstation, not equivalent-conditioning or quality guarantees. GPU runs
+were sequential; device memory includes unrelated Windows/desktop usage, which
+was not terminated. WSL compute-app enumeration returned no attributable
+process rows. Strict background GPU contention isolation is therefore unproven.
+
+Compact measurements: [rows](../experiments/results/llama_cpp/2026-09-26-reference-speaker-only/runs.json)
+and [summary](../experiments/results/llama_cpp/2026-09-26-reference-speaker-only/summary.json).
+Private outputs: `outputs/benchmark/batch-8hox9qj8/`. Longer-passage listening
+and the full three-mode evaluation remain pending.
