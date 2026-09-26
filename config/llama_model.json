@@ -1,0 +1,19 @@
+{
+  "repository": "ggml-org/Qwen3-TTS-12Hz-1.7B-Base-GGUF",
+  "revision": "ca27d74bc954b73dadab5b71ca265d87fc861a7c",
+  "source_model": "Qwen/Qwen3-TTS-12Hz-1.7B-Base",
+  "files": [
+    {
+      "filename": "Qwen3-TTS-12Hz-1.7B-Base-Q8_0.gguf",
+      "size": 1847874400,
+      "sha256": "ac7931aeb2e7aad1a6ed6602d353a5679c9d096b18ce8204ac730a8408d572e1",
+      "url": "https://huggingface.co/ggml-org/Qwen3-TTS-12Hz-1.7B-Base-GGUF/resolve/ca27d74bc954b73dadab5b71ca265d87fc861a7c/Qwen3-TTS-12Hz-1.7B-Base-Q8_0.gguf"
+    },
+    {
+      "filename": "mmproj-Qwen3-TTS-12Hz-1.7B-Base-Q8_0.gguf",
+      "size": 446422912,
+      "sha256": "6fd65188839bcd6ecc91b277ad471e22a0edfada4699a0fe82f1165c18cfcce2",
+      "url": "https://huggingface.co/ggml-org/Qwen3-TTS-12Hz-1.7B-Base-GGUF/resolve/ca27d74bc954b73dadab5b71ca265d87fc861a7c/mmproj-Qwen3-TTS-12Hz-1.7B-Base-Q8_0.gguf"
+    }
+  ]
+}

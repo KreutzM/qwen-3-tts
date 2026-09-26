@@ -1,0 +1,152 @@
+[
+  {
+    "backend": "llama.cpp",
+    "conditioning": "speaker_only",
+    "passage": "de_edge_cases",
+    "runs": 3,
+    "failures": 0,
+    "process_rtf": {
+      "median": 0.4891494331963385,
+      "min": 0.47876164500088303,
+      "max": 0.5395791560023633
+    },
+    "synthesis_rtf": {
+      "median": 0.3685897435897436,
+      "min": 0.36272727272727273,
+      "max": 0.37896825396825395
+    },
+    "peak_device_used_mib": {
+      "median": 8628,
+      "min": 8623,
+      "max": 8776
+    },
+    "peak_process_tree_rss_bytes": {
+      "median": 2399178752,
+      "min": 2399158272,
+      "max": 2399178752
+    }
+  },
+  {
+    "backend": "llama.cpp",
+    "conditioning": "speaker_only",
+    "passage": "de_prose",
+    "runs": 3,
+    "failures": 0,
+    "process_rtf": {
+      "median": 0.5705351464014096,
+      "min": 0.5582388865343602,
+      "max": 0.5752724858294558
+    },
+    "synthesis_rtf": {
+      "median": 0.3804347826086957,
+      "min": 0.3768939393939394,
+      "max": 0.3897058823529412
+    },
+    "peak_device_used_mib": {
+      "median": 8651,
+      "min": 8622,
+      "max": 8741
+    },
+    "peak_process_tree_rss_bytes": {
+      "median": 2382540800,
+      "min": 2382524416,
+      "max": 2382573568
+    }
+  },
+  {
+    "backend": "llama.cpp",
+    "conditioning": "speaker_only",
+    "passage": "de_technical",
+    "runs": 3,
+    "failures": 0,
+    "process_rtf": {
+      "median": 0.5486137431568029,
+      "min": 0.528148788432366,
+      "max": 0.5572338408289028
+    },
+    "synthesis_rtf": {
+      "median": 0.3798491379310345,
+      "min": 0.3722587719298246,
+      "max": 0.38973799126637554
+    },
+    "peak_device_used_mib": {
+      "median": 8655,
+      "min": 8624,
+      "max": 8655
+    },
+    "peak_process_tree_rss_bytes": {
+      "median": 2392461312,
+      "min": 2392416256,
+      "max": 2392522752
+    }
+  },
+  {
+    "backend": "python",
+    "conditioning": "speaker_only",
+    "passage": "de_edge_cases",
+    "runs": 3,
+    "failures": 0,
+    "process_rtf": null,
+    "synthesis_rtf": {
+      "median": 2.157612210409032,
+      "min": 2.1208676561012343,
+      "max": 2.238211791745754
+    },
+    "peak_device_used_mib": {
+      "median": 9205,
+      "min": 9195,
+      "max": 9747
+    },
+    "peak_process_tree_rss_bytes": {
+      "median": 2165166080,
+      "min": 2087112704,
+      "max": 2174320640
+    }
+  },
+  {
+    "backend": "python",
+    "conditioning": "speaker_only",
+    "passage": "de_prose",
+    "runs": 3,
+    "failures": 0,
+    "process_rtf": null,
+    "synthesis_rtf": {
+      "median": 2.1537285984073984,
+      "min": 2.126313104087755,
+      "max": 2.218082331437472
+    },
+    "peak_device_used_mib": {
+      "median": 9705,
+      "min": 9514,
+      "max": 9711
+    },
+    "peak_process_tree_rss_bytes": {
+      "median": 2183245824,
+      "min": 2182774784,
+      "max": 2183245824
+    }
+  },
+  {
+    "backend": "python",
+    "conditioning": "speaker_only",
+    "passage": "de_technical",
+    "runs": 3,
+    "failures": 0,
+    "process_rtf": null,
+    "synthesis_rtf": {
+      "median": 2.2657775316084448,
+      "min": 2.2429573889271586,
+      "max": 2.408766595898608
+    },
+    "peak_device_used_mib": {
+      "median": 9578,
+      "min": 9578,
+      "max": 10949
+    },
+    "peak_process_tree_rss_bytes": {
+      "median": 2183606272,
+      "min": 2183245824,
+      "max": 2183794688
+    }
+  }
+]

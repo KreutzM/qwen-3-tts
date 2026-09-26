@@ -56,3 +56,17 @@ HTTPS endpoint. See the setup guide for reference-audio handling.
 Qwen3-TTS is developed by the Qwen team: <https://github.com/QwenLM/Qwen3-TTS>
 
 The upstream project documents German as a supported language and provides the 1.7B Base model for rapid voice cloning. This repository does not fork or vendor upstream Qwen3-TTS; it consumes the official `qwen-tts` package/model artifacts.
+
+## Optional llama.cpp experiment
+
+The additional backend is developed in this repository on
+`feat/llama-cpp-backend`, tracked in [issue #3](https://github.com/KreutzM/qwen-3-tts/issues/3).
+See [the setup guide](docs/LLAMA_CPP_SETUP.md) for pinned local CUDA build tools,
+GGUF artifact retrieval, the bounded German runner and verification status.
+The official Python SDPA environment remains the comparison baseline.
+
+The target workstation evaluation completed native cloning and a matched
+27-run comparison across native Q8_0 and both Python conditioning modes. The
+user accepted one sample per passage/mode by listening. Retain llama.cpp as an
+optional backend, with Python SDPA as reference/fallback; see
+[measured results and limitations](docs/LLAMA_CPP_RESULTS.md).
