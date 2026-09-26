@@ -3,7 +3,7 @@
 ## Verified scope
 
 The optional backend builds and produces structurally valid, non-silent German
-WAV files on the target RTX 3060 under WSL2. All nine synthesis benchmark runs
+WAV files from German input on the target RTX 3060 under WSL2. All nine synthesis benchmark runs
 completed before the frame cap, without OOM or process failures. This is runtime
 and timing evidence; pronunciation, sentence completeness and speaker similarity
 have not been assessed by listening.
@@ -107,8 +107,8 @@ with transcript conditioning. The Python worker uses the cached pinned snapshot,
 float16 and one reusable prompt per conditioning mode across all passages. It
 records model loading and reference-prompt creation separately, marks the first
 synthesis, and samples device memory with the same monitor. PyTorch allocator
-metrics remain separate. This worker has fixture-based logic tests but its real
-GPU cloning path is unverified until reference input is available.
+metrics remain separate. This worker has fixture-based logic tests and its exact cached float16/SDPA
+model-load profile was checked on the GPU, but its real cloning path is unverified until reference input is available.
 
 Sampling parameters and seeds are recorded; code-predictor implementations and
 conditioning differ, so equal seeds do not imply equivalent samples. The native

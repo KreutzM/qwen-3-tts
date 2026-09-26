@@ -59,6 +59,8 @@ Measured on the target workstation; synthesis results are recorded separately.
 | --- | --- |
 | Distribution | Ubuntu 22.04.5 LTS |
 | WSL2 kernel | 6.18.33.2-microsoft-standard-WSL2 |
+| CPU reported by WSL | AMD Ryzen 9 5950X, 32 logical CPUs, x86_64 |
+| WSL RAM reported by `free -h` | 62 GiB |
 | GPU | RTX 3060, 12288 MiB |
 | Windows NVIDIA driver exposed in WSL | 591.86 |
 | Host C++ compiler | GCC 11.4.0 |
@@ -152,3 +154,8 @@ Transformers tokenizer's `fix_mistral_regex` path queried model metadata despite
 `HF_HUB_OFFLINE=1`. Using the existing cached snapshot's local path avoided that
 lookup and passed. No package versions or original runtime helper were changed.
 The new Python benchmark worker already uses this local-snapshot approach.
+
+The exact comparison-worker load profile was separately checked against the
+same cached revision: Qwen3TTSModel with explicit float16, SDPA and cuda:0 loaded
+successfully offline. Reference-prompt creation and actual clone generation
+still require consented input and have not been measured.
