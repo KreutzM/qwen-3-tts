@@ -13,20 +13,26 @@ from urllib.parse import urlparse
 
 def read_manifest(path: Path) -> dict:
     manifest = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(manifest, dict):
+        raise ValueError("Manifest must be a JSON object.")
     files = manifest.get("files")
     if not isinstance(files, list) or not files:
         raise ValueError("Manifest must contain a non-empty files list.")
     names: set[str] = set()
     for item in files:
+        if not isinstance(item, dict):
+            raise ValueError("Each artifact must be a JSON object.")
         name = item.get("filename", "")
-        if not name or Path(name).name != name or name in (".", "..") or name in names:
+        if not isinstance(name, str) or not name or Path(name).name != name or name in (".", "..") or name in names:
             raise ValueError("Artifact filenames must be unique basenames.")
         names.add(name)
-        if not re.fullmatch(r"[0-9a-f]{64}", item.get("sha256", "")):
+        digest = item.get("sha256", "")
+        if not isinstance(digest, str) or not re.fullmatch(r"[0-9a-f]{64}", digest):
             raise ValueError(f"Invalid SHA-256 for {name}.")
         if type(item.get("size")) is not int or item["size"] <= 0:
             raise ValueError(f"Invalid size for {name}.")
-        if urlparse(item.get("url", "")).scheme != "https":
+        url = item.get("url", "")
+        if not isinstance(url, str) or urlparse(url).scheme != "https" or not urlparse(url).netloc:
             raise ValueError(f"HTTPS URL required for {name}.")
     return manifest
 

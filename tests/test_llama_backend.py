@@ -20,7 +20,7 @@ def manifest_item(data=b'weights'):
 
 def test_manifest_rejects_traversal_duplicate_and_bad_integrity(tmp_path):
     path = tmp_path / 'manifest.json'
-    for changes in ({'filename': '../escape'}, {'sha256': 'bad'}, {'size': 0}, {'url': 'http://example.org/a'}):
+    for changes in ({'filename': '../escape'}, {'filename': 7}, {'sha256': 'bad'}, {'sha256': 3}, {'size': 0}, {'url': 'http://example.org/a'}, {'url': 'https:///missing-host'}):
         path.write_text(json.dumps({'files': [manifest_item() | changes]}))
         with pytest.raises(ValueError):
             artifacts.read_manifest(path)
@@ -213,3 +213,11 @@ def test_reference_must_remain_local(config):
     outside.write_bytes(b'private')
     with pytest.raises(ValueError, match='local_data'):
         llama_runner.execute(replace(config, reference=outside))
+
+
+@pytest.mark.parametrize('data', [[], {'files': ['invalid']}, {'files': []}])
+def test_manifest_structure_errors_are_actionable(tmp_path, data):
+    path = tmp_path / 'bad.json'
+    path.write_text(json.dumps(data))
+    with pytest.raises(ValueError):
+        artifacts.read_manifest(path)
