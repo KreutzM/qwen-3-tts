@@ -122,7 +122,7 @@ Follow child dependencies and record only measured progress:
 - [x] #5: successful CUDA TTS build and safe bootstrap rerun.
 - [x] #6: verified Q8_0 artifacts and runtime compatibility.
 - [x] #7: bounded German runner, unit tests and documented commands.
-- [ ] #8: actual synthesis, consented cloning and listening acceptance.
+- [x] #8: actual synthesis, consented cloning and listening acceptance.
 - [ ] #9: comparable backend benchmarks and quality assessment.
 - [ ] #10: final reproducibility record, adoption decision and reviewable PR.
 
@@ -132,6 +132,7 @@ audio blocks cloning and its comparison, not independent implementation work.
 Native build/rerun and unconditioned synthesis were verified on 2026-09-26.
 Nine native runs passed structural and termination checks; see
 [docs/LLAMA_CPP_RESULTS.md](docs/LLAMA_CPP_RESULTS.md). The user accepted the short smoke and one sample from each German passage by
-listening ("alle ok"). #8–#10 remain open for consented cloning/comparison,
-speaker-similarity listening and the final adoption review. The user confirmed
-that no consented reference recording is available.
+listening ("alle ok"). #9–#10 remain open for the conditioned comparison,
+the full cross-backend quality review and final adoption decision. The user
+subsequently supplied consented reference audio/transcript and accepted the
+native cloned smoke by listening; #8 is complete.

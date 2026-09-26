@@ -136,7 +136,8 @@ Compiled objects are reused; no upstream source or dependency version is changed
   sampled device-wide usage, including other workloads, not exclusive model use.
 - The user accepted the short smoke and one sample per German benchmark passage
   by listening on 2026-09-26 ("alle ok"). Consent-dependent cloning and Python
-  comparison remain pending; the user confirmed no reference recording exists.
+  comparison were pending at this checkpoint; consented input was supplied later
+  (see the native cloning update below).
   Unit fixtures are not real GPU cloning evidence.
 
 See [LLAMA_CPP_RESULTS.md](LLAMA_CPP_RESULTS.md) and its sanitized result links.
@@ -161,3 +162,13 @@ The exact comparison-worker load profile was separately checked against the
 same cached revision: Qwen3TTSModel with explicit float16, SDPA and cuda:0 loaded
 successfully offline. Reference-prompt creation and actual clone generation
 still require consented input and have not been measured.
+
+### Consented native cloning smoke (2026-09-26)
+
+The user supplied reference audio/transcript, confirmed usage permission and
+confirmed timestamp alignment. A private 15-second mono 24 kHz reference
+produced a native clone of 5.12 seconds / 64 frames without OOM or cap failure.
+The user accepted speaker similarity and sentence quality by listening
+("ja, alles ok"). Detailed measurements and preparation scope are recorded
+in [LLAMA_CPP_RESULTS.md](LLAMA_CPP_RESULTS.md). Longer conditioned backend
+comparison and its quality review remain in progress.

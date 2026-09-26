@@ -11,10 +11,11 @@ No intelligibility, repetition, sentence-ending or pronunciation issues were
 reported for those four files. The other benchmark repetitions and speaker
 similarity have not been assessed by listening.
 
-There is no consented reference WAV/transcript pair in `local_data/`. Python
-speaker-only and transcript-conditioned comparisons, llama.cpp voice cloning,
-and the final quality/adoption decision remain pending. No synthetic test fixture
-was used as a real cloning reference.
+The initial reference-free evaluation is complete. The user subsequently
+supplied consented reference audio and transcript; a native cloned smoke sample
+was accepted by listening (see the section below). Python conditioning
+comparisons and the final quality/adoption decision are in progress. No synthetic
+test fixture was used as a real cloning reference.
 
 ## Reproducibility
 
@@ -111,7 +112,7 @@ float16 and one reusable prompt per conditioning mode across all passages. It
 records model loading and reference-prompt creation separately, marks the first
 synthesis, and samples device memory with the same monitor. PyTorch allocator
 metrics remain separate. This worker has fixture-based logic tests and its exact cached float16/SDPA
-model-load profile was checked on the GPU, but its real cloning path is unverified until reference input is available.
+model-load profile was checked on the GPU, and its actual reference-conditioned benchmark is now in progress.
 
 Sampling parameters and seeds are recorded; code-predictor implementations and
 conditioning differ, so equal seeds do not imply equivalent samples. The native
@@ -143,5 +144,27 @@ The user accepted these four private outputs on 2026-09-26 with "alle ok":
 - `outputs/benchmark/batch-jfzv8mec/llama/run-515txob5/speech.wav` (edge cases).
 
 This is user listening feedback, not an automated quality score or a speaker
-similarity assessment. The user also confirmed that no consented reference
-recording is available. Cloning and the conditioned Python comparison remain open.
+similarity assessment. At that initial checkpoint no reference recording was available. The user
+subsequently supplied consented input; see the native cloning section below.
+
+## Consented reference and native clone smoke
+
+On 2026-09-26 the user supplied a three-minute MP3 excerpt and a timestamped
+transcript from the longer recording, confirmed usage permission, and confirmed
+that transcript timestamps 0–180 seconds correspond to the excerpt. Original
+files remain private and unchanged. Prepared references are mono 24 kHz PCM
+under ignored `local_data/`; preparation provenance stays private.
+
+A first speaker-only smoke used the first 15 seconds. It produced 64 frames,
+5.12 seconds at 24 kHz, with nonzero RMS and natural termination below the
+300-frame limit. Process time was 6.531 seconds, reported synthesis time 2.04
+seconds, and sampled device-wide GPU peak 8606 MiB. Private output:
+`outputs/llama-cpp/run-a84iazng/speech.wav`. The user listened and answered
+"ja, alles ok" to the speaker similarity, intelligibility, completeness and
+repetition questions. This verifies the short cloned sample, not all benchmark
+passages or the relative quality of Python conditioning modes.
+
+For a full comparison, a separate first-13-second reference ends at the next
+transcript boundary. Its exact provided transcript comprises the segments
+starting at 0:01 and 0:07; timestamps and the longer document header are removed.
+All configurations in that comparison use the same prepared audio.
